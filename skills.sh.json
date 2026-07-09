@@ -1,0 +1,13 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "QGIS Python Scripting",
+      "description": "Skills for QGIS Python console scripting and custom processing algorithms.",
+      "skills": [
+        "qgis-pyscript"
+      ]
+    }
+  ]
+}
