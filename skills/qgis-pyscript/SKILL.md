@@ -1,3 +1,4 @@
+---
 name: qgis-pyscript
 description: Guidelines and references for writing, debugging, and executing PyQGIS scripts and custom Processing Algorithms in QGIS, handling background threading and version requirements.
 ---
