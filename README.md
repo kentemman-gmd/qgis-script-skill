@@ -36,7 +36,7 @@ We recommend using one of the following names when creating your public GitHub r
 Once this repository is public, you and other users can install this skill globally or inside any project workspace using the `skills` CLI:
 
 ```bash
-npx skills add <your-github-username>/<your-repo-name>
+npx skills add kentemman-gmd/qgis-script-skill
 ```
 
 ### Method B: Manual Local Setup
