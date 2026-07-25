@@ -11,7 +11,6 @@ A custom agent skill for writing, formatting, and debugging QGIS Python scripts 
 ```text
 ├── .agents/
 │   └── skills.json                # Local workspace skill registration config
-├── .gitignore                     # Git ignore rules
 ├── skills.sh.json                 # skills.sh page customization config
 ├── README.md                      # This documentation file
 └── skills/
