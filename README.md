@@ -2,7 +2,7 @@
 
 [![skills.sh](https://skills.sh/b/kentemman-gmd/qgis-script-skill)](https://skills.sh)
 
-A custom agent skill for writing, formatting, and debugging QGIS Python scripts (PyQGIS) and custom Processing Algorithms. This skill instructs coding agents (such as Antigravity, Claude Code, Cursor, etc.) to always adhere strictly to official QGIS APIs, follow thread-safety conventions (using `QgsTask` or Qt threading), and structure Processing Tools properly.
+A custom agent skill for writing, formatting, and debugging QGIS Python scripts (PyQGIS) and custom Processing Algorithms. This skill instructs coding agents (such as Antigravity, Claude Code, Cursor, etc.) to act as a **Senior QGIS Developer**. It enforces strict adherence to official QGIS APIs, ensures thread-safety conventions (using `QgsTask` or Qt threading), mandates proper Processing Tool structuring, and guarantees rigorous validation, testing, and architectural planning before any code is generated.
 
 ---
 
@@ -11,29 +11,41 @@ A custom agent skill for writing, formatting, and debugging QGIS Python scripts 
 ```text
 ├── .agents/
 │   └── skills.json                # Local workspace skill registration config
+├── .gitignore                     # Git ignore rules
 ├── skills.sh.json                 # skills.sh page customization config
 ├── README.md                      # This documentation file
 └── skills/
     └── qgis-pyscript/
         ├── SKILL.md               # Core skill rules and guidelines
         └── references/
-            ├── pyqgis_basics.md   # Reference for layer loading & feature edits
-            ├── processing_algorithm.md # Reference for custom Processing tools
-            └── multithreading.md  # Reference for QgsTask & background operations
+            ├── architecture_patterns.md  # Reference for Architecture Patterns & Plugin Structure
+            ├── coding_standards.md       # Reference for Coding, Naming & Logging Standards
+            ├── multithreading.md         # Reference for QgsTask & background operations
+            ├── official_resources.md     # Important links to PyQGIS API and Cookbook docs
+            ├── processing_algorithm.md   # Reference for custom Processing tools
+            ├── pyqgis_basics.md          # Reference for layer loading & feature edits
+            └── validation_testing.md     # Reference for geometry validation, CRS handling & testing
 ```
 
 ---
 
 ## How to Use the Skill
 
-When this skill is loaded, your AI coding assistant will automatically trigger it whenever you ask QGIS-related python tasks. The agent will:
+When this skill is loaded, your AI coding assistant will automatically trigger it whenever you ask QGIS-related python tasks. The agent will act as a Senior QGIS Developer and enforce a strict **9-step development workflow** for every request to prioritize accuracy, reliability, and maintainability:
 
-1. **Ask for QGIS version & script goals**: Before writing any code, it will confirm your target environment (e.g. QGIS 3.28 LTR) and clear workflows.
-2. **Follow safe geometry & attribute transactions**: Wrapping changes in `startEditing()` and `commitChanges()`.
-3. **Use QGIS background tasks**: Directing heavy tasks to `QgsTask` or thread pools to avoid locking up the QGIS user interface.
-4. **Build Processing skeleton classes**: Structuring tools by subclassing `QgsProcessingAlgorithm`.
+1. **Requirement Analysis**: Analyze the requirements and verify all assumptions before proceeding.
+2. **Architecture Selection**: Determine the right plugin UI/Processing patterns and project structure.
+3. **Implementation Plan**: Outline the step-by-step logic and PyQGIS APIs to be used.
+4. **Risk Assessment**: Identify potential issues like silent reprojections, UI locking, or missing validation.
+5. **Validation Strategy**: Detail how inputs (geometry, CRS, fields) will be validated.
+6. **Test Plan**: Generate tests for success cases, empty layers, invalid geometries, missing fields, etc.
+7. **Implementation**: Produce the code, adhering to strict coding and logging standards.
+8. **Validation Review**: Review the generated code to ensure it meets the strategy.
+9. **Self Review**: Perform a final architectural and quality check.
 
+The agent will **not generate code immediately**. It will plan, ask clarifying questions when uncertain, and provide thoroughly validated solutions that wrap changes in `startEditing()` and `commitChanges()`, process data headlessly in `QgsProcessingAlgorithm`, and delegate heavy operations to `QgsTask` or thread pools.
 
+---
 
 ## References Documentation
 
