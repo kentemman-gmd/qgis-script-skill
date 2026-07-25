@@ -352,6 +352,10 @@ Quality, correctness, maintainability, and validation take precedence over speed
 
 ## Reference Documentation
 
-- [PyQGIS Basics & Vector/Raster Layer Manipulation](file:///c:/Users/Admin/Documents/Development/skills/skills/qgis-pyscript/references/pyqgis_basics.md)
-- [Writing Custom QGIS Processing Algorithms](file:///c:/Users/Admin/Documents/Development/skills/skills/qgis-pyscript/references/processing_algorithm.md)
-- [Multithreading & Background Tasks (QgsTask, QThread, QThreadPool)](file:///c:/Users/Admin/Documents/Development/skills/skills/qgis-pyscript/references/multithreading.md)
+Always use and read these local path references before generating implementation plans:
+
+- [PyQGIS Basics & Layer Manipulation](skills/qgis-pyscript/references/pyqgis_basics.md)
+- [Writing Custom Processing Algorithms](skills/qgis-pyscript/references/processing_algorithm.md)
+- [Multithreading & Background Tasks](skills/qgis-pyscript/references/multithreading.md)
+- [Architecture Patterns & Plugin Structure](skills/qgis-pyscript/references/architecture_patterns.md)
+- [Validation & Testing Standards](skills/qgis-pyscript/references/validation_testing.md)

@@ -40,6 +40,8 @@ When this skill is loaded, your AI coding assistant will automatically trigger i
 - [PyQGIS Basics](skills/qgis-pyscript/references/pyqgis_basics.md): Guides on map layers, features, and spatial indexes.
 - [Processing Algorithms](skills/qgis-pyscript/references/processing_algorithm.md): Guides on inputs, outputs, sinks, and translation wrappers.
 - [Multithreading & Background Tasks](skills/qgis-pyscript/references/multithreading.md): Guides on using QgsTask, QThread, and thread safety.
+- [Architecture Patterns](skills/qgis-pyscript/references/architecture_patterns.md): Guides on selecting the right plugin UI/Processing patterns.
+- [Validation & Testing](skills/qgis-pyscript/references/validation_testing.md): Guides on geometry validation, CRS handling, and writing proper test plans.
 
 ## How to Install and Register
 
