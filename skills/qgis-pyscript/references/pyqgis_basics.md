@@ -1,120 +1,116 @@
 # PyQGIS Basics Reference
 
-This document covers common PyQGIS operations for layer manipulation, feature extraction, geometry modification, and transaction safety.
+This document covers strict PyQGIS standards for layer manipulation, feature extraction, geometry modification, transaction safety, and CRS handling, ensuring Senior QGIS Developer quality.
 
 ## 1. Project and Layer Management
 
-Accessing the active project instance and loading layers:
+When loading layers, always validate assumptions (path validity, provider availability).
 
 ```python
+import logging
 from qgis.core import QgsProject, QgsVectorLayer, QgsRasterLayer
 
-# Get the current project
-project = QgsProject.instance()
+logger = logging.getLogger('QGIS_Plugin')
 
-# Load a Vector Layer
-# QgsVectorLayer(path, baseName, providerLib)
-vector_layer = QgsVectorLayer("C:/data/roads.shp", "Roads Layer", "ogr")
-if not vector_layer.isValid():
-    print("Layer failed to load!")
-else:
-    project.addMapLayer(vector_layer)
+def load_vector_layer(path: str, name: str, provider: str = "ogr") -> QgsVectorLayer:
+    """Loads and validates a vector layer."""
+    layer = QgsVectorLayer(path, name, provider)
+    if not layer.isValid():
+        logger.error(f"Failed to load vector layer from {path}")
+        raise ValueError(f"Invalid layer: {path}")
 
-# Load a Raster Layer
-raster_layer = QgsRasterLayer("C:/data/dem.tif", "DEM Layer")
-if not raster_layer.isValid():
-    print("Raster failed to load!")
-else:
-    project.addMapLayer(raster_layer)
+    QgsProject.instance().addMapLayer(layer)
+    logger.info(f"Successfully loaded {name}")
+    return layer
 ```
 
 ## 2. Accessing & Iterating Features
 
-Always specify fields or geometry constraints if you do not need all of them, for maximum performance.
+Always specify fields or geometry constraints if you do not need all of them to maximize performance. Avoid full scans if indexed alternatives exist.
 
 ```python
-from qgis.core import QgsFeatureRequest
+from qgis.core import QgsFeatureRequest, QgsVectorLayer
 
-layer = QgsProject.instance().mapLayersByName("Roads Layer")[0]
+def process_highway_features(layer: QgsVectorLayer) -> None:
+    """Processes features filtered by attribute to prevent unnecessary loops."""
+    request = QgsFeatureRequest().setFilterExpression('"type" = \'highway\'')
 
-# Simple iteration
-for feature in layer.getFeatures():
-    # Access attributes by name or index
-    name = feature['name']
-    road_type = feature['type']
-    geom = feature.geometry()
+    # Only request the attributes we need
+    request.setSubsetOfAttributes(['name', 'type'], layer.fields())
     
-# Iterating with attribute constraints (Faster)
-request = QgsFeatureRequest().setFilterExpression('"type" = \'highway\'')
-for feature in layer.getFeatures(request):
-    print(feature['name'])
+    for feature in layer.getFeatures(request):
+        name = feature['name']
+        geom = feature.geometry()
+        # Geometry validation
+        if geom.isNull() or not geom.isGeosValid():
+            logger.warning(f"Feature {feature.id()} has invalid geometry. Skipping.")
+            continue
+
+        logger.info(f"Processing highway: {name}")
 ```
 
 ## 3. Editing Layers Safely
 
-When modifying geometries or attributes, always wrap the operations inside `startEditing()` and `commitChanges()`.
+When modifying geometries or attributes, always wrap the operations inside `startEditing()` and `commitChanges()`. Handle exceptions strictly.
 
 ```python
-layer = QgsProject.instance().mapLayersByName("Roads Layer")[0]
+def update_highway_name(layer: QgsVectorLayer, old_name: str, new_name: str) -> None:
+    """Safely updates feature attributes within an edit session."""
+    layer.startEditing()
+    try:
+        request = QgsFeatureRequest().setFilterExpression(f'"name" = \'{old_name}\'')
+        field_idx = layer.fields().indexOf('name')
 
-# Start editing mode
-layer.startEditing()
+        if field_idx == -1:
+            raise ValueError("Field 'name' not found in layer.")
+            
+        for feature in layer.getFeatures(request):
+            layer.changeAttributeValue(feature.id(), field_idx, new_name)
 
-try:
-    for feature in layer.getFeatures():
-        if feature['name'] == 'Old Highway Name':
-            # Update attributes
-            layer.changeAttributeValue(feature.id(), layer.fields().indexOf('name'), 'New Highway Name')
-            
-            # Update geometry
-            # layer.changeGeometry(feature.id(), new_geometry)
-            
-    # Commit changes to source
-    layer.commitChanges()
-except Exception as e:
-    # Rollback changes if anything goes wrong
-    layer.rollBack()
-    raise e
+        # Commit changes to source
+        if not layer.commitChanges():
+            logger.error("Failed to commit layer changes.")
+            layer.rollBack()
+    except Exception as e:
+        # Rollback changes if anything goes wrong
+        layer.rollBack()
+        logger.error(f"Error during editing session: {str(e)}")
+        raise
 ```
 
-## 4. Creating New Features
+## 4. CRS Handling Standards
 
-Adding features to an existing layer:
+Always determine Input, Processing, and Output CRS. Never silently reproject.
 
 ```python
-from qgis.core import QgsFeature, QgsGeometry, QgsPointXY
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject
 
-layer = QgsProject.instance().mapLayersByName("Points Layer")[0]
+def transform_geometry(geom, source_crs: QgsCoordinateReferenceSystem, target_crs: QgsCoordinateReferenceSystem):
+    """Explicitly handles CRS transformations."""
+    if source_crs == target_crs:
+        return geom
 
-layer.startEditing()
+    logger.info(f"Reprojecting from {source_crs.authid()} to {target_crs.authid()}")
+    transform = QgsCoordinateTransform(source_crs, target_crs, QgsProject.instance())
 
-# Create feature
-feat = QgsFeature(layer.fields())
-feat.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(120.5, 14.2)))
-feat.setAttribute('name', 'Sample Site')
-feat.setAttribute('value', 42.5)
-
-# Add feature to layer
-success, new_features = layer.addFeature(feat)
-if success:
-    layer.commitChanges()
-else:
-    layer.rollBack()
+    transformed_geom = geom.clone()
+    transformed_geom.transform(transform)
+    return transformed_geom
 ```
 
-## 5. Using Spatial Index
+## 5. Performance Standards
 
-For spatial search queries (e.g., finding the nearest feature), use a `QgsSpatialIndex` for high performance.
+For spatial search queries (e.g., finding the nearest feature), use a `QgsSpatialIndex` for high performance. Avoid unnecessary nested loops.
 
 ```python
-from qgis.core import QgsSpatialIndex, QgsPointXY
+from qgis.core import QgsSpatialIndex, QgsPointXY, QgsVectorLayer
 
-layer = QgsProject.instance().mapLayersByName("Points Layer")[0]
+def find_nearest_features(layer: QgsVectorLayer, search_point: QgsPointXY, neighbors: int = 3):
+    """Utilizes a spatial index for fast nearest neighbor lookups."""
+    # Build index
+    index = QgsSpatialIndex(layer.getFeatures())
 
-# Build index
-index = QgsSpatialIndex(layer.getFeatures())
-
-# Find nearest 3 features to a coordinate point
-search_point = QgsPointXY(120.5, 14.2)
-nearest_ids = index.nearestNeighbor(search_point, neighbors=3)
+    # Fast search
+    nearest_ids = index.nearestNeighbor(search_point, neighbors)
+    return nearest_ids
 ```

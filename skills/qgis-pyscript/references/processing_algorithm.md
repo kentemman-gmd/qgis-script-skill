@@ -1,10 +1,14 @@
 # Writing QGIS Custom Processing Algorithms
 
-This document provides a template and explanation for creating custom geoprocessing tools in QGIS that integrate directly into the **Processing Toolbox**.
+This document provides a standard, production-ready template for creating custom geoprocessing tools in QGIS. It enforces the rules of accuracy, validation, maintainability, and feedback reporting required for high-quality algorithms.
 
-## 1. Processing Algorithm Template
+## 1. Naming Standards
+- Files must use `snake_case.py` (e.g., `buffer_points_algorithm.py`).
+- Never invent Algorithm IDs. Use lowercase strings without spaces (e.g., `bufferpoints`).
 
-Every custom processing tool must inherit from `QgsProcessingAlgorithm`. Below is the standard, production-ready skeleton for a Processing algorithm.
+## 2. Processing Algorithm Template
+
+Every custom processing tool must inherit from `QgsProcessingAlgorithm` and strictly implement the required methods.
 
 ```python
 from qgis.PyQt.QtCore import QCoreApplication
@@ -21,85 +25,68 @@ from qgis.core import (
 class BufferPointsAlgorithm(QgsProcessingAlgorithm):
     """
     A custom QGIS Processing Algorithm that buffers point layers.
+    Always uses explicit validation and progress tracking.
     """
     
-    # Define parameter name constants
+    # Define parameter name constants (avoid magic strings)
     INPUT = 'INPUT'
     OUTPUT = 'OUTPUT'
 
     def tr(self, text):
-        """
-        Helper method to return translated strings.
-        """
+        """Helper method for translating strings."""
         return QCoreApplication.translate('Processing', text)
 
     def createInstance(self):
-        """
-        Must return a new instance of this algorithm class.
-        """
         return BufferPointsAlgorithm()
 
     def name(self):
-        """
-        The unique ID of the algorithm (lowercase, no spaces).
-        """
-        return 'bufferpoints'
+        """Unique ID (snake_case or lowercased word)."""
+        return 'buffer_points'
 
     def displayName(self):
-        """
-        The user-visible name shown in the Toolbox interface.
-        """
-        return self.tr('Buffer Points Algorithm')
+        """User-visible name in the Toolbox."""
+        return self.tr('Buffer Points')
 
     def group(self):
-        """
-        The group name containing this algorithm.
-        """
         return self.tr('Vector Utilities')
 
     def groupId(self):
-        """
-        The unique ID of the group containing this algorithm.
-        """
-        return 'vectorutilities'
+        return 'vector_utilities'
 
     def shortHelpString(self):
-        """
-        A description of the algorithm to display in the help panel.
-        """
-        return self.tr("This algorithm buffers features of an input vector layer.")
+        return self.tr("Buffers valid point geometries from an input layer.")
 
     def initAlgorithm(self, config=None):
-        """
-        Define input parameters and output destination sinks.
-        """
-        # Add Input layer parameter
+        """Define input and output parameters."""
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                self.tr('Input layer'),
-                [QgsProcessing.TypeVectorPoint] # Restrict to points
+                self.tr('Input Point Layer'),
+                [QgsProcessing.TypeVectorPoint] # Explicitly restrict to Points
             )
         )
 
-        # Add Output destination layer parameter
         self.addParameter(
             QgsProcessingParameterFeatureSink(
                 self.OUTPUT,
-                self.tr('Buffered output')
+                self.tr('Buffered Output')
             )
         )
 
     def processAlgorithm(self, parameters, context, feedback):
         """
         The core geoprocessing logic.
+        Must validate geometries, CRS, and inputs before execution.
         """
-        # Retrieve input layer as a Source
         source = self.parameterAsSource(parameters, self.INPUT, context)
         if source is None:
             raise QgsProcessingException(self.tr("Invalid input layer source."))
 
-        # Initialize output Destination Sink
+        # Validate CRS existence
+        if not source.crs().isValid():
+            feedback.reportError(self.tr("Input layer lacks a valid CRS."))
+            raise QgsProcessingException(self.tr("Invalid CRS."))
+
         (sink, dest_id) = self.parameterAsSink(
             parameters,
             self.OUTPUT,
@@ -108,46 +95,46 @@ class BufferPointsAlgorithm(QgsProcessingAlgorithm):
             source.wkbType(),
             source.crs()
         )
+
         if sink is None:
             raise QgsProcessingException(self.tr("Invalid output destination sink."))
 
-        # Setup progress reporting
         total = 100.0 / source.featureCount() if source.featureCount() else 0
         features = source.getFeatures()
 
         for current, feature in enumerate(features):
-            # Check for user cancellation
             if feedback.isCanceled():
+                feedback.pushInfo(self.tr("Processing canceled by user."))
                 break
 
-            # Process features (e.g., clone feature and process geometry)
-            out_feature = QgsFeature(feature)
-            
-            # Write to output sink
-            sink.addFeature(out_feature, QgsFeatureSink.FastInsert)
+            geom = feature.geometry()
 
-            # Update progress bar
+            # Explicit Geometry Validation
+            if geom.isNull() or not geom.isGeosValid():
+                feedback.pushInfo(self.tr(f"Skipping invalid geometry for feature ID {feature.id()}"))
+                continue
+
+            # Geoprocessing action
+            out_feature = QgsFeature(feature)
+            # e.g., out_feature.setGeometry(geom.buffer(10.0, 5))
+            
+            sink.addFeature(out_feature, QgsFeatureSink.FastInsert)
             feedback.setProgress(int(current * total))
 
         return {self.OUTPUT: dest_id}
 ```
 
-## 2. Common Parameter Types
+## 3. Best Practices & Never Do's
 
-| Parameter Class | Purpose | Example |
-|---|---|---|
-| `QgsProcessingParameterFeatureSource` | Vector layer input | Select a vector layer |
-| `QgsProcessingParameterRasterLayer` | Raster layer input | Select a DEM or imagery |
-| `QgsProcessingParameterDistance` | Distance values (respects map units) | Buffer size, search distance |
-| `QgsProcessingParameterNumber` | Integer/float value inputs | Max iterations, threshold value |
-| `QgsProcessingParameterString` | General text inputs | Attribute name, SQL queries |
-| `QgsProcessingParameterBoolean` | Checkbox toggles | Clip bounds (True/False) |
-| `QgsProcessingParameterFile` | Path to an external file | Log file export, config JSON |
-| `QgsProcessingParameterFeatureSink` | Output vector layer path | Destination file or temp layer |
+**Always:**
+- Use `QgsProcessingFeedback` for progress and logs (`feedback.pushInfo()`).
+- Support cancellation (`feedback.isCanceled()`).
+- Validate inputs, geometries, CRS, and layer types before looping over features.
+- Handle exceptions using `QgsProcessingException`.
+- Route processed data to a `QgsFeatureSink`.
 
-## 3. Best Practices
-
-- **Never modify input layers directly**: Always stream features into a `QgsFeatureSink` (output sink).
-- **Check for cancellations**: In loops, checking `feedback.isCanceled()` is critical to prevent QGIS UI lockups.
-- **Translate strings**: Use the translation helper `self.tr()` for parameter descriptions, algorithm display names, and exceptions.
-- **Log messages correctly**: Instead of `print()`, use `feedback.pushInfo("Message")` or `feedback.reportError("Error detail")`.
+**Never:**
+- Use GUI dialogs (`QMessageBox`) inside Processing logic.
+- Rely on `iface` inside a `processAlgorithm` method (Processing algorithms must run headless).
+- Mix business logic/UI code with geoprocessing.
+- Silently reproject layers without explicit instructions.
