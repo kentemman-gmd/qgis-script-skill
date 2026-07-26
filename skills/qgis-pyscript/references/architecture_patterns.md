@@ -85,15 +85,20 @@ When designing UIs using QGIS Qt design codes, **always** prefer existing QGIS c
 - **Field Selection:** `QgsFieldComboBox`, `QgsFieldExpressionWidget`.
 - **Coordinate Reference System (CRS):** `QgsProjectionSelectionWidget`.
 - **File/Folder Selection:** `QgsFileWidget` (Provides native file dialogs and history).
-- **Color Selection:** `QgsColorButton` (Handles QGIS color palettes and transparency), `QgsColorRampButton`.
+- **Color Selection:** `QgsColorButton` (Handles QGIS color palettes and transparency), `QgsColorRampButton`, `QgsColorWheel`, `QgsColorBox`.
 - **Scale & Units:** `QgsScaleWidget`, `QgsScaleComboBox`, `QgsUnitSelectionWidget`.
 - **Extent:** `QgsExtentGroupBox`.
 - **Expressions & Data Defined:** `QgsExpressionBuilderWidget`, `QgsExpressionLineEdit`, `QgsDataDefinedButton`.
-- **Feature Selection:** `QgsFeatureListComboBox`.
-- **Symbology & Style:** `QgsSymbolButton`, `QgsFontButton`, `QgsOpacityWidget`.
-- **Numbers & Values:** `QgsDoubleSpinBox`, `QgsSpinBox` (QGIS variants handle NULL values gracefully).
-- **User Feedback:** `QgsMessageBar` (For non-blocking inline alerts instead of modal `QMessageBox`).
-- **Layout & Structure:** `QgsCollapsibleGroupBox` (For collapsible sections in complex dialogs).
+- **Feature Selection:** `QgsFeatureListComboBox`, `QgsFeaturePickerWidget`.
+- **Symbology & Style:** `QgsSymbolButton`, `QgsFontButton`, `QgsOpacityWidget`, `QgsBlendModeComboBox`, `QgsPenStyleComboBox`, `QgsPenJoinStyleComboBox`, `QgsPenCapStyleComboBox`, `QgsBrushStyleComboBox`.
+- **Numbers & Values:** `QgsDoubleSpinBox`, `QgsSpinBox` (QGIS variants handle NULL values gracefully), `QgsRangeSlider`.
+- **Dates & Times:** `QgsDateEdit`, `QgsTimeEdit`, `QgsDateTimeEdit`.
+- **Passwords & Auth:** `QgsPasswordLineEdit`, `QgsAuthSettingsWidget`.
+- **Lists & Selection:** `QgsCheckableComboBox` (multiple selections), `QgsFilterLineEdit` (clears and handles NULLs), `QgsListWidget`, `QgsKeyValueWidget`.
+- **Provider & DB:** `QgsProviderConnectionComboBox`, `QgsDatabaseSchemaComboBox`, `QgsDatabaseTableComboBox`.
+- **User Feedback:** `QgsMessageBar` (For non-blocking inline alerts instead of modal `QMessageBox`), `QgsBusyIndicatorDialog`.
+- **Layout & Structure:** `QgsCollapsibleGroupBox` (For collapsible sections in complex dialogs), `QgsScrollArea`.
+- **Code & Text:** `QgsCodeEditor` (Subclasses like `QgsCodeEditorPython`, `QgsCodeEditorSQL`, `QgsCodeEditorHTML`).
 
 *Rules for UI Design:*
 1. Build UIs in **Qt Designer** using `.ui` files.
