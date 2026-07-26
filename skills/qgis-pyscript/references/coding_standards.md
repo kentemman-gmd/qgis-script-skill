@@ -18,6 +18,7 @@ This document outlines the strict coding, naming, and structural standards for P
 *   Use comments only where business logic is complex; prefer self-documenting code.
 
 **Avoid:**
+*   **Emojis:** Never use emojis in UI elements (window titles, labels, buttons, tooltips) or in source code (comments, docstrings, log messages). Use simple, professional text and standard QGIS/Qt icons (`QIcon`) instead.
 *   Hardcoding PyQt5 or PyQt6 imports without checking the target QGIS version.
 *   Reinventing GIS UI components (e.g., building a custom layer dropdown instead of using `QgsMapLayerComboBox`).
 *   Magic values (use constants at the top of the file or class).
