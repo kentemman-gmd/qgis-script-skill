@@ -66,4 +66,12 @@ This is absolutely critical for UI development because:
 * **QGIS 3.x** generally uses **PyQt5**.
 * **QGIS 3.40+ and QGIS 4.0** transition to **PyQt6**.
 
-You must adapt your imports (`from PyQt5...` vs `from PyQt6...`), method calls, and Qt Designer file generation (`pyuic5` vs `pyuic6`) based on the user's specified version. Be aware that certain methods (especially related to `QgsProcessing` and `QgsTask`) may have different signatures or availability between versions. The URLs above generally point to the latest/master docs; adjust expectations if the user is targeting an older LTR.
+You must adapt your imports (`from PyQt5...` vs `from PyQt6...`), method calls, and Qt Designer file generation (`pyuic5` vs `pyuic6`) based on the user's specified version.
+
+**Critical Version Checks:**
+After determining the user's QGIS version, you must **double-check the documentation** for that specific version before writing code to verify:
+* Are the chosen imports deprecated or no longer supported?
+* Have core classes or modules changed namespaces (e.g., shifts from `qgis.core` to `qgis.gui` or vice versa)?
+* Have method signatures changed between the user's target version and the master documentation? (This is especially common for `QgsProcessing` and `QgsTask` related APIs).
+
+The URLs above generally point to the latest/master docs; you must adjust expectations and verify compatibility if the user is targeting an older LTR or migrating to a newer major release.
