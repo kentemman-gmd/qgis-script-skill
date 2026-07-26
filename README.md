@@ -2,7 +2,7 @@
 
 [![skills.sh](https://skills.sh/b/kentemman-gmd/qgis-script-skill)](https://skills.sh)
 
-A custom agent skill for writing, formatting, and debugging QGIS Python scripts (PyQGIS) and custom Processing Algorithms. This skill instructs coding agents (such as Antigravity, Claude Code, Cursor, etc.) to act as a **Senior QGIS Developer**. It enforces strict adherence to official QGIS APIs, ensures thread-safety conventions (using `QgsTask` or Qt threading), mandates proper Processing Tool structuring, and guarantees rigorous validation, testing, and architectural planning before any code is generated.
+A custom agent skill for writing, formatting, and debugging QGIS Python scripts (PyQGIS) and custom Processing Algorithms. This skill instructs coding agents (such as Antigravity, Claude Code, Cursor, etc.) to act as a **Senior QGIS Developer**. It enforces strict adherence to official QGIS APIs through a **Documentation First Policy**, ensures thread-safety conventions (using `QgsTask` or Qt threading), mandates proper Processing Tool structuring, prioritizes native QGIS Qt widgets over custom UIs, and guarantees rigorous validation, testing, and architectural planning before any code is generated.
 
 ---
 
@@ -42,7 +42,7 @@ When this skill is loaded, your AI coding assistant will automatically trigger i
 8. **Validation Review**: Review the generated code to ensure it meets the strategy.
 9. **Self Review**: Perform a final architectural and quality check.
 
-The agent will **not generate code immediately**. It will plan, ask clarifying questions when uncertain, and provide thoroughly validated solutions that wrap changes in `startEditing()` and `commitChanges()`, process data headlessly in `QgsProcessingAlgorithm`, and delegate heavy operations to `QgsTask` or thread pools.
+The agent will **not generate code immediately**. It will plan, ask clarifying questions when uncertain, verify assumptions against official documentation, and provide thoroughly validated solutions that wrap changes in `startEditing()` and `commitChanges()`, process data headlessly in `QgsProcessingAlgorithm`, and delegate heavy operations to `QgsTask` or thread pools. For UI, it will always prioritize built-in QGIS Qt widgets.
 
 ---
 

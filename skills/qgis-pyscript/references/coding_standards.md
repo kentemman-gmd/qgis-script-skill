@@ -5,6 +5,10 @@ This document outlines the strict coding, naming, and structural standards for P
 ## 1. PyQGIS Coding Standards
 
 **Always:**
+*   **Adapt PyQt Imports:** Dynamically adapt `PyQt5` or `PyQt6` imports based on the user's specified QGIS version (QGIS 3.x uses PyQt5; QGIS 3.40+ uses PyQt6). Example: `try: from PyQt6.QtWidgets import ... except ImportError: from PyQt5.QtWidgets import ...` (or use `qgis.PyQt` shim if available).
+*   **Prefer Native QGIS Widgets:** Always use `qgis.gui` widgets (e.g., `QgsMapLayerComboBox`) over standard Qt widgets for GIS inputs.
+*   **Adhere to UI Preferences:** Only generate `.ui` files or programmatic Python UI layouts based explicitly on the user's preference. Apply custom CSS/Qt Stylesheets only if requested.
+*   **License Compliance:** If integrating third-party plugin code or algorithms, retain their original license headers and document the source clearly in docstrings.
 *   Use type hints for function arguments and return types.
 *   Use standard Python docstrings for all classes and functions.
 *   Use descriptive variable names (e.g., `buffer_distance` instead of `d`).
@@ -14,6 +18,8 @@ This document outlines the strict coding, naming, and structural standards for P
 *   Use comments only where business logic is complex; prefer self-documenting code.
 
 **Avoid:**
+*   Hardcoding PyQt5 or PyQt6 imports without checking the target QGIS version.
+*   Reinventing GIS UI components (e.g., building a custom layer dropdown instead of using `QgsMapLayerComboBox`).
 *   Magic values (use constants at the top of the file or class).
 *   Silent failures (always log or raise exceptions).
 *   Excessive globals.
