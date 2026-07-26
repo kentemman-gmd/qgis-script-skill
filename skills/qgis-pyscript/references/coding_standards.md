@@ -12,12 +12,15 @@ This document outlines the strict coding, naming, and structural standards for P
 *   Handle exceptions explicitly (e.g., `try...except QgsProcessingException`).
 *   Validate all inputs, assumptions, and CRS compatibility before processing.
 *   Use comments only where business logic is complex; prefer self-documenting code.
+*   Use simple, professional text for comments.
 
 **Avoid:**
 *   Magic values (use constants at the top of the file or class).
 *   Silent failures (always log or raise exceptions).
 *   Excessive globals.
 *   Unnecessary complexity.
+*   Emojis in source code (comments, docstrings, log messages).
+*   Emojis in UI elements (window titles, labels, buttons, tooltips). Use standard QGIS/Qt icons (`QIcon`) instead.
 
 ## 2. Naming Standards
 
