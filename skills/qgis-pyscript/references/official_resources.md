@@ -75,3 +75,12 @@ After determining the user's QGIS version, you must **double-check the documenta
 * Have method signatures changed between the user's target version and the master documentation? (This is especially common for `QgsProcessing` and `QgsTask` related APIs).
 
 The URLs above generally point to the latest/master docs; you must adjust expectations and verify compatibility if the user is targeting an older LTR or migrating to a newer major release.
+
+## Third-Party Plugin Integration and Automation
+
+When a user requests to integrate with, modify, or automate workflows using existing third-party plugins (e.g., QFieldSync/QField packager, processing algorithms from other plugins), you must adhere to the following steps:
+
+1. **Suggest the Best Option:** Always propose the most robust architectural solution that aligns with global QGIS styles and the "Documentation First Policy".
+2. **Read the Plugin Documentation:** Do not assume the APIs of third-party plugins. If a user provides documentation links or attachments regarding the plugin's flow, read them thoroughly. If not, state that you need to review the specific plugin's source or documentation.
+3. **Use Provided Processing Algorithms:** Many complex plugins expose their core functionalities as Processing Algorithms (e.g., `qfieldsync:package`). Prioritize invoking these existing algorithms via `processing.run()` in a headless manner rather than attempting to hack or duplicate the plugin's internal Python libraries or GUI code.
+4. **Library Integration:** If direct library usage is requested (e.g., importing a specific class from a third-party plugin), explicitly verify the import path and class existence, and warn the user about potential instability if the third-party plugin updates.

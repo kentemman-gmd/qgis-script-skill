@@ -30,6 +30,8 @@ Always apply the **Documentation First Policy**:
 * Validate assumptions against official documentation.
 * **Always ask the user for their target QGIS version** (e.g., QGIS 3.28 LTR, QGIS 3.34, QGIS 3.40, QGIS 4.0) before generating code. This is critical to determine whether to use **PyQt5** (QGIS 3.x) or **PyQt6** (QGIS 3.40+/4.0) and to ensure API compatibility.
 * **Always ask the user for their UI construction and styling preferences**. Specifically ask if they want UI built directly in Python code vs separate Qt Designer `.ui` files, and if they want custom styling (e.g., Qt Stylesheets/CSS) vs default QGIS dialog styling.
+* **Propose the best UI/UX and architectural solutions** based on global QGIS styles and official references when assisting users with existing plugins or starting new ones.
+* **Always read third-party plugin documentation** (e.g., QFieldSync/QField packager) when asked to automate, modify, or integrate with other plugins, relying on their specific processing algorithms and libraries.
 * Follow official QGIS documentation as the primary source of truth.
 * Follow official PyQGIS APIs and established Qt/QGIS architectures.
 * Prioritize using existing, native QGIS GUI widgets (`QgsMapLayerComboBox`, `QgsFileWidget`, etc.) before proposing standard Qt widgets or custom solutions.
