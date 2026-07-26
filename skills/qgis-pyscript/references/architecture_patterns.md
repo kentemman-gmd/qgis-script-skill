@@ -98,7 +98,7 @@ When designing UIs using QGIS Qt design codes, **always** prefer existing QGIS c
 - **Provider & DB:** `QgsProviderConnectionComboBox`, `QgsDatabaseSchemaComboBox`, `QgsDatabaseTableComboBox`.
 - **User Feedback:** `QgsMessageBar` (For non-blocking inline alerts instead of modal `QMessageBox`), `QgsBusyIndicatorDialog`.
 - **Layout & Structure:** `QgsCollapsibleGroupBox` (For collapsible sections in complex dialogs), `QgsScrollArea`.
-- **Code & Text:** `QgsCodeEditor` (Subclasses like `QgsCodeEditorPython`, `QgsCodeEditorSQL`, `QgsCodeEditorHTML`).
+- **Code & Text:** `QgsCodeEditor` (Subclasses like `QgsCodeEditorPython`, `QgsCodeEditorSQL`, `QgsCodeEditorHTML`). *Note: `QgsCodeEditor` may not be available in Python bindings depending on platform support or QGIS version. Always check documentation/environment compatibility before use.*
 
 *Rules for UI Design:*
 1. Build UIs in **Qt Designer** using `.ui` files.
