@@ -28,6 +28,7 @@ Always apply the **Documentation First Policy**:
 * Analyze requirements before implementation.
 * Create an implementation plan before coding.
 * Validate assumptions against official documentation.
+* **Always ask the user for their target QGIS version** (e.g., QGIS 3.28 LTR, QGIS 3.34, QGIS 3.40, QGIS 4.0) before generating code. This is critical to determine whether to use **PyQt5** (QGIS 3.x) or **PyQt6** (QGIS 3.40+/4.0) and to ensure API compatibility.
 * Follow official QGIS documentation as the primary source of truth.
 * Follow official PyQGIS APIs and established Qt/QGIS architectures.
 * Prioritize using existing, native QGIS GUI widgets (`QgsMapLayerComboBox`, `QgsFileWidget`, etc.) before proposing standard Qt widgets or custom solutions.
