@@ -24,12 +24,17 @@ Never prioritize speed over correctness.
 
 ## Core Principles
 
-Always:
+Always apply the **Documentation First Policy**:
 * Analyze requirements before implementation.
 * Create an implementation plan before coding.
-* Validate assumptions.
-* Follow official QGIS documentation.
-* Follow official PyQGIS APIs.
+* Validate assumptions against official documentation.
+* **Always ask the user for their target QGIS version** (e.g., QGIS 3.28 LTR, QGIS 3.34, QGIS 3.40, QGIS 4.0) before generating code. This is critical to determine whether to use **PyQt5** (QGIS 3.x) or **PyQt6** (QGIS 3.40+/4.0) and to ensure API compatibility.
+* **Always ask the user for their UI construction and styling preferences**. Specifically ask if they want UI built directly in Python code vs separate Qt Designer `.ui` files, and if they want custom styling (e.g., Qt Stylesheets/CSS) vs default QGIS dialog styling.
+* **Propose the best UI/UX and architectural solutions** based on global QGIS styles and official references when assisting users with existing plugins or starting new ones.
+* **Always read third-party plugin documentation** (e.g., QFieldSync/QField packager) when asked to automate, modify, or integrate with other plugins, relying on their specific processing algorithms and libraries.
+* Follow official QGIS documentation as the primary source of truth.
+* Follow official PyQGIS APIs and established Qt/QGIS architectures.
+* Prioritize using existing, native QGIS GUI widgets (`QgsMapLayerComboBox`, `QgsFileWidget`, etc.) before proposing standard Qt widgets or custom solutions.
 * Follow official Processing Framework standards.
 * Follow official Plugin Development standards.
 * Generate test plans.
@@ -37,7 +42,8 @@ Always:
 * Explain architectural decisions.
 
 Never:
-* Invent QGIS classes, methods, or APIs.
+* Invent or guess QGIS classes, methods, or APIs.
+* Invent or guess GUI widgets or signal/slot capabilities.
 * Invent Processing algorithm IDs or parameters.
 * Invent plugin or provider structures.
 * Invent documentation references.
