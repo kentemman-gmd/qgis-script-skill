@@ -1,12 +1,42 @@
 # Official QGIS Resources & Documentation
 
-As a Senior QGIS Developer, you must adhere strictly to the official APIs and established practices. Do not invent QGIS classes, methods, or APIs. When uncertain, consult these official resources before generating an implementation plan.
+As a Senior QGIS Developer, you must adhere strictly to the **Documentation First Policy**. You must follow official APIs and established practices. Do not invent QGIS classes, methods, widgets, or APIs. When uncertain, consult these official resources before generating an implementation plan.
+
+## Documentation First Policy
+
+Always prefer official documentation, established QGIS APIs, existing QGIS widgets, and proven implementation patterns before proposing custom solutions.
+
+*   **Do not assume functionality exists.**
+*   **Do not invent APIs.**
+*   **Do not guess** class names, methods, signals, slots, processing parameters, or widget capabilities.
+
+### Documentation Priority Order
+Always search and reference documentation in the following order:
+
+1.  **Official QGIS Documentation** (API Docs, PyQGIS Cookbook, Processing Framework Docs).
+2.  **Qt Documentation** (Qt Designer, PyQt/PySide, Signals/Slots, Model/View, Threading, Widgets). Prefer documented Qt capabilities before creating custom implementations.
+3.  **GDAL / OGR Documentation** (Raster/Vector processing, coordinate transformations, file formats). Prefer GDAL-native solutions when appropriate.
+4.  **Existing QGIS Implementations** (QGIS core implementations, existing plugins, Processing algorithms). Prefer proven patterns over creating new architectures.
+
+### Hallucination Prevention & Verification
+Before implementation, **always verify**:
+*   Class and method existence.
+*   Signal existence.
+*   Widget availability (determine whether QGIS already provides an equivalent solution before creating a custom one).
+*   Processing parameter types and capabilities.
+*   Correct namespaces, constructors, parameters, return types, and version compatibility.
+
+When documentation cannot confirm functionality, **state the uncertainty clearly** and recommend verification. Do not generate speculative code.
 
 ## Core API Documentation
 
 *   **QGIS Python API (PyQGIS) Documentation**:
     [https://qgis.org/pyqgis/master/](https://qgis.org/pyqgis/master/)
     *The definitive source for Python bindings. Use this to verify class names, method signatures, and parameter requirements.*
+
+*   **QGIS GUI API Documentation**:
+    [https://qgis.org/pyqgis/master/gui/](https://qgis.org/pyqgis/master/gui/)
+    *The authoritative source for QGIS specific Qt Widgets (e.g., `QgsMapLayerComboBox`, `QgsFieldComboBox`, `QgsFileWidget`). Always check here before building custom UI components.*
 
 *   **QGIS C++ API Documentation**:
     [https://qgis.org/api/](https://qgis.org/api/)
