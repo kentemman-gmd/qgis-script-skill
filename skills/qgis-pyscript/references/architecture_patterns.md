@@ -85,11 +85,15 @@ When designing UIs using QGIS Qt design codes, **always** prefer existing QGIS c
 - **Field Selection:** `QgsFieldComboBox`, `QgsFieldExpressionWidget`.
 - **Coordinate Reference System (CRS):** `QgsProjectionSelectionWidget`.
 - **File/Folder Selection:** `QgsFileWidget` (Provides native file dialogs and history).
-- **Color Selection:** `QgsColorButton` (Handles QGIS color palettes and transparency).
-- **Scale:** `QgsScaleWidget` or `QgsScaleComboBox`.
+- **Color Selection:** `QgsColorButton` (Handles QGIS color palettes and transparency), `QgsColorRampButton`.
+- **Scale & Units:** `QgsScaleWidget`, `QgsScaleComboBox`, `QgsUnitSelectionWidget`.
 - **Extent:** `QgsExtentGroupBox`.
-- **Expressions:** `QgsExpressionBuilderWidget`, `QgsExpressionLineEdit`.
+- **Expressions & Data Defined:** `QgsExpressionBuilderWidget`, `QgsExpressionLineEdit`, `QgsDataDefinedButton`.
 - **Feature Selection:** `QgsFeatureListComboBox`.
+- **Symbology & Style:** `QgsSymbolButton`, `QgsFontButton`, `QgsOpacityWidget`.
+- **Numbers & Values:** `QgsDoubleSpinBox`, `QgsSpinBox` (QGIS variants handle NULL values gracefully).
+- **User Feedback:** `QgsMessageBar` (For non-blocking inline alerts instead of modal `QMessageBox`).
+- **Layout & Structure:** `QgsCollapsibleGroupBox` (For collapsible sections in complex dialogs).
 
 *Rules for UI Design:*
 1. Build UIs in **Qt Designer** using `.ui` files.
