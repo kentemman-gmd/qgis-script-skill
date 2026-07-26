@@ -49,6 +49,7 @@ Never:
 * Invent documentation references.
 * Skip planning.
 * Skip validation.
+*   Use emojis in UI elements or source code.
 
 If uncertain:
 * State uncertainty clearly.
