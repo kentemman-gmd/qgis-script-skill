@@ -101,7 +101,11 @@ When designing UIs using QGIS Qt design codes, **always** prefer existing QGIS c
 - **Code & Text:** `QgsCodeEditor` (Subclasses like `QgsCodeEditorPython`, `QgsCodeEditorSQL`, `QgsCodeEditorHTML`). *Note: `QgsCodeEditor` may not be available in Python bindings depending on platform support or QGIS version. Always check documentation/environment compatibility before use.*
 
 *Rules for UI Design:*
-1. Build UIs in **Qt Designer** using `.ui` files.
-2. Use the "Promote to..." feature in Qt Designer to promote standard Qt widgets to QGIS custom widgets (e.g., promote `QComboBox` to `qgsmaplayercombobox.h` / `QgsMapLayerComboBox`).
-3. Load the `.ui` files dynamically via `uic.loadUi` or compile them using `pyuic5`/`pyuic6`.
-4. Separate the UI logic (events, signals) from the core processing logic.
+1. **Ask for User Preference:** Before building UI, always ask the user:
+   - Do they prefer building UIs via **Qt Designer** (`.ui` files) or programmatically via direct **Python code**?
+   - Do they want **custom styling** (e.g., Qt Stylesheets / CSS) or **default QGIS styling**?
+2. If `.ui` files are chosen:
+   - Use the "Promote to..." feature in Qt Designer to promote standard Qt widgets to QGIS custom widgets (e.g., promote `QComboBox` to `qgsmaplayercombobox.h` / `QgsMapLayerComboBox`).
+   - Load the `.ui` files dynamically via `uic.loadUi` or compile them using `pyuic5`/`pyuic6`.
+3. If programmatic Python is chosen, instantiate the QGIS pre-made widgets directly in the layout.
+4. Separate the UI logic (events, signals) from the core processing logic regardless of the construction method.
