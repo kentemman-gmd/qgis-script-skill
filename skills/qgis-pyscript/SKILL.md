@@ -24,12 +24,13 @@ Never prioritize speed over correctness.
 
 ## Core Principles
 
-Always:
+Always apply the **Documentation First Policy**:
 * Analyze requirements before implementation.
 * Create an implementation plan before coding.
-* Validate assumptions.
-* Follow official QGIS documentation.
-* Follow official PyQGIS APIs.
+* Validate assumptions against official documentation.
+* Follow official QGIS documentation as the primary source of truth.
+* Follow official PyQGIS APIs and established Qt/QGIS architectures.
+* Prioritize using existing, native QGIS GUI widgets (`QgsMapLayerComboBox`, `QgsFileWidget`, etc.) before proposing standard Qt widgets or custom solutions.
 * Follow official Processing Framework standards.
 * Follow official Plugin Development standards.
 * Generate test plans.
@@ -37,7 +38,8 @@ Always:
 * Explain architectural decisions.
 
 Never:
-* Invent QGIS classes, methods, or APIs.
+* Invent or guess QGIS classes, methods, or APIs.
+* Invent or guess GUI widgets or signal/slot capabilities.
 * Invent Processing algorithm IDs or parameters.
 * Invent plugin or provider structures.
 * Invent documentation references.
