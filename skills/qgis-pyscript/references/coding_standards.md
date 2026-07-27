@@ -39,6 +39,7 @@ Use scalable plugin architecture:
 plugin_name/
 ├── __init__.py
 ├── metadata.txt
+├── icon.png                  # Mandatory plugin icon
 ├── plugin.py
 ├── resources.qrc
 ├── resources.py
@@ -60,7 +61,66 @@ plugin_name/
 └── tests/
 ```
 
-## 4. Logging Standards
+## 4. Automated Icon Generation Protocol (Console, Plugin, Processing Tool & Hybrid)
+
+When creating a QGIS Plugin, Processing Algorithm, Hybrid Plugin, or Console Script with custom toolbar buttons, **always generate and configure a custom transparent PNG icon automatically**:
+
+1. **Transparent Image Generation Prompting:**
+   Invoke `generate_image` tool with explicit transparent background requirements:
+   > *"A modern, minimalist GIS vector icon for a QGIS [Plugin/Processing Tool/Console Script] named [Name]. Features [key GIS symbol] on a **completely transparent background (PNG format)** with crisp outlines, high-contrast colors, and no solid background square/circle. Must render clearly on both light and dark QGIS toolbar themes."*
+2. **File Storage & Asset Management:**
+   Save/copy the generated transparent image to `icon.png` inside the root directory of the plugin (`plugin_folder/icon.png`) or script workspace directory.
+3. **Manifest Integration (`metadata.txt` for Plugins & Hybrid):**
+   Include `icon=icon.png` in the `[general]` section of `metadata.txt`.
+4. **Dynamic Icon Loading in Python:**
+   Always load `icon.png` using dynamic path resolution with fallback:
+   ```python
+   import os
+   from qgis.PyQt.QtGui import QIcon
+
+   icon_path = os.path.join(os.path.dirname(__file__), "icon.png")
+   icon = QIcon(icon_path) if os.path.exists(icon_path) else QIcon(":/images/themes/default/mActionBuffer.svg")
+   ```
+
+## 5. Lifecycle & Deployment Guidelines by Deliverable Type
+
+### A. Standalone PyQGIS Console Script
+- **Target Environment:** Designed for execution directly in the **QGIS Python Console Editor** tab (e.g. `script_name.py`).
+- **Global Context:** `iface` and `QgsProject.instance()` are available directly.
+- **User Feedback:** Use non-blocking message bar: `iface.messageBar().pushMessage("Title", "Message", level=Qgis.Info)`.
+- **Toolbar / Action Cleanup:** If adding a custom action or button to `iface` from the console, assign a unique `objectName` or remove previous instances before re-adding to prevent duplicate buttons when the user re-runs the script tab.
+
+### B. Full QGIS Plugin & Hybrid Plugin
+- **Target Environment:** Installed package in QGIS profile directory (`python/plugins/`).
+- **Symmetrical Menu Cleanup:** Every `addAction` or `insertMenu` created in `initGui()` **must** have a corresponding cleanup (`removeAction`, `removePluginMenu`, `deleteLater()`, etc.) in `unload()`.
+- **Hybrid Provider Lifecycle:** For Hybrid Plugins, register `QgsProcessingProvider` in `initGui()` via `QgsApplication.processingRegistry().addProvider()` and unregister in `unload()`.
+- **Python Module Cache Flush Warning:** Always inform the user that editing `.py` files in QGIS requires restarting QGIS or using the **Plugin Reloader** plugin to flush Python memory cache (`sys.modules`).
+
+### C. Custom Processing Tool (`QgsProcessingAlgorithm`)
+- **Target Environment:** Headless execution inside QGIS Processing Toolbox / Modeler.
+- **Headless Rule:** Never call `iface`, `QMessageBox`, or parent UI widgets inside `processAlgorithm()`.
+- **Feedback & Logging:** Use `QgsProcessingFeedback.pushInfo()` and `reportError()`.
+- **Toolbox Icon:** Implement `icon()` method in algorithm class returning `QIcon(icon_path)` or SVG fallback.
+
+### D. Standalone Headless PyQGIS Script
+- **Target Environment:** Standalone CLI script executed outside QGIS desktop app (OS command line, scheduled cron jobs, server pipelines, Docker containers, or via `qgis_process` CLI).
+- **Initialization & Teardown Protocol:**
+  ```python
+  from qgis.core import QgsApplication
+
+  # Initialize QGIS Application headlessly without GUI
+  QgsApplication.setPrefixPath("/path/to/qgis", True)
+  qgs = QgsApplication([], False)  # Second parameter False disables GUI
+  qgs.initQgis()
+
+  # ... Perform layer processing / PyQGIS analysis ...
+
+  # Clean teardown
+  qgs.exitQgis()
+  ```
+- **Strict Rules:** Zero `iface` references (`iface` is `None`). No Qt GUI widgets or modal dialog dependencies. Uses standard Python `logging` or `print()` for output.
+
+## 6. Logging Standards
 
 Use structured logging to facilitate debugging.
 
@@ -72,7 +132,7 @@ Levels:
 
 Do not use random `print()` statements in final plugin or algorithm code. For Processing Algorithms, prefer `QgsProcessingFeedback.pushInfo()` and `QgsProcessingFeedback.reportError()`.
 
-## 5. Documentation Requirements
+## 7. Documentation Requirements
 
 For substantial implementations, always provide:
 *   **Purpose**: What the script/tool solves.

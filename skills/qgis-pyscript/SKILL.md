@@ -28,7 +28,49 @@ Always apply the **Documentation First Policy**:
 * Analyze requirements before implementation.
 * Create an implementation plan before coding.
 * Validate assumptions against official documentation.
-* **Always ask the user for their target QGIS version** (e.g., QGIS 3.28 LTR, QGIS 3.34, QGIS 3.40, QGIS 4.0) before generating code. This is critical to determine whether to use **PyQt5** (QGIS 3.x) or **PyQt6** (QGIS 3.40+/4.0) and to ensure API compatibility.
+* **Architectural & Target Disambiguation (Mandatory First Question):** Before generating code, **always confirm the exact QGIS deliverable type and menu preferences** with the user:
+  * **Deliverable Type:**
+    1. **Standalone PyQGIS Console Script** (Python script executed in QGIS Python Console Editor tabs)
+    2. **Full QGIS Plugin** (Standalone plugin package with dialogs/dock widgets)
+    3. **Custom Processing Tool / Algorithm** (`QgsProcessingAlgorithm` for Processing Toolbox)
+    4. **Hybrid Plugin** (Plugin GUI combining DockWidget/Dialogs with a custom `QgsProcessingProvider`)
+    5. **Standalone Headless PyQGIS Script** (Command-line script initialized via `QgsApplication(GUI=False)` or run via `qgis_process` CLI outside QGIS GUI)
+  * **QGIS Target Version:** QGIS 3.x LTR (PyQt5) vs. QGIS 3.40+/4.0 (PyQt6).
+  * **Menu & UI Placement (If Plugin / Hybrid / Console Action):**
+    * Main Top-Level Menu Bar item (e.g., dedicated menu next to `Processing`/`Help`)
+    * Standard `Plugins` menu drop-down (`iface.pluginMenu().addAction()`)
+    * Specific category sub-menu (`Vector`, `Raster`, `Database`)
+    * Main QGIS Toolbar icon (`iface.addToolBarIcon()`)
+* **Automated Icon Generation Protocol (Plugins, Processing Tools, Hybrid & Console Actions):** When creating a QGIS Plugin, Processing Algorithm, Hybrid Plugin, or Console Script with custom toolbar buttons, **always generate and configure a custom transparent PNG icon automatically**:
+  1. **Transparent Image Generation Prompting:** Invoke `generate_image` tool with explicit transparent background requirements:
+     > *"A modern, minimalist GIS vector icon for a QGIS [Plugin/Processing Tool/Console Script] named [Name]. Features [key GIS symbol] on a **completely transparent background (PNG format)** with crisp outlines, high-contrast colors, and no solid background square/circle. Must render clearly on both light and dark QGIS toolbar themes."*
+  2. **File Storage & Asset Management:** Save/copy the generated transparent image to `icon.png` inside the root directory of the plugin (`plugin_folder/icon.png`) or script folder.
+  3. **Manifest Integration (`metadata.txt` for Plugins/Hybrid):** Include `icon=icon.png` in the `[general]` section of `metadata.txt`.
+  4. **Dynamic Icon Loading in Python:** Always load `icon.png` using dynamic path resolution with SVG fallback:
+     ```python
+     import os
+     from qgis.PyQt.QtGui import QIcon
+
+     icon_path = os.path.join(os.path.dirname(__file__), "icon.png")
+     icon = QIcon(icon_path) if os.path.exists(icon_path) else QIcon(":/images/themes/default/mActionBuffer.svg")
+     ```
+* **Deployment, Execution & Lifecycle Guidelines by Deliverable Type:**
+  * **Standalone PyQGIS Console Script:**
+    * Designed for execution in the **QGIS Python Console Editor** tab.
+    * Accesses global `iface` and `QgsProject.instance()` safely.
+    * Uses `iface.messageBar()` for user notifications (avoid blocking dialogs unless required).
+    * If adding temporary toolbar actions or shortcuts from the console, ensure idempotent creation/cleanup to prevent duplicate actions when re-running the script in console tabs.
+  * **Full QGIS Plugin & Hybrid Plugin:**
+    * **Symmetrical Cleanup:** Every `addAction` or `insertMenu` in `initGui()` **must** have a corresponding `removeAction` or `deleteLater()` in `unload()`. For Hybrid Plugins, register `QgsProcessingProvider` in `initGui()` and remove it in `unload()`.
+    * **Python Module Cache Flush Warning:** Always inform the user that editing `.py` files in QGIS requires restarting QGIS or using the **Plugin Reloader** plugin to flush Python memory cache (`sys.modules`).
+  * **Custom Processing Tool / Algorithm (`QgsProcessingAlgorithm`):**
+    * Must run purely headless inside `processAlgorithm()`. Never reference `iface` or show GUI dialogs inside processing threads.
+    * Use `QgsProcessingFeedback` for progress, warnings, and error reporting.
+    * Override `icon()` method to display the algorithm icon in Processing Toolbox.
+  * **Standalone Headless PyQGIS Script:**
+    * Designed for execution outside QGIS GUI (OS command line, cron jobs, server pipelines, Docker containers, or `qgis_process` CLI).
+    * Must initialize `QgsApplication([], False)` and call `initQgis()` before calling PyQGIS APIs, followed by `exitQgis()` on script completion.
+    * Strictly **NO** `iface`, `QMessageBox`, or Qt GUI display dependencies. Uses standard Python `logging` or stdout `print()` for feedback.
 * **Always ask the user for their UI construction and styling preferences**. Specifically ask if they want UI built directly in Python code vs separate Qt Designer `.ui` files, and if they want custom styling (e.g., Qt Stylesheets/CSS) vs default QGIS dialog styling.
 * **Propose the best UI/UX and architectural solutions** based on global QGIS styles and official references when assisting users with existing plugins or starting new ones.
 * **Always read third-party plugin documentation** (e.g., QFieldSync/QField packager) when asked to automate, modify, or integrate with other plugins, relying on their specific processing algorithms and libraries.
@@ -49,7 +91,7 @@ Never:
 * Invent documentation references.
 * Skip planning.
 * Skip validation.
-*   Use emojis in UI elements or source code.
+* Use emojis in UI elements or source code.
 
 If uncertain:
 * State uncertainty clearly.

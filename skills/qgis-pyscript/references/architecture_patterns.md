@@ -1,6 +1,21 @@
 # QGIS Architecture Standards
 
-Before generating code, a Senior QGIS Developer must determine the most appropriate QGIS integration pattern based on user requirements.
+Before generating code, a Senior QGIS Developer must determine the most appropriate QGIS integration pattern based on user requirements and disambiguate deliverable type and menu preferences.
+
+## 0. Architectural & Target Disambiguation Protocol
+Always confirm before coding:
+1. **Deliverable Type:**
+   - **Standalone PyQGIS Console Script:** Written for execution in the QGIS Python Console Editor tabs. Ideal for quick automation, layer manipulation, or interactive utilities.
+   - **Full QGIS Plugin:** Standalone plugin package installed in QGIS plugins directory (`python/plugins/`). Features custom dialogs, dock widgets, and menu items.
+   - **Custom Processing Tool (`QgsProcessingAlgorithm`):** Geoprocessing tool registered in the Processing Toolbox for spatial analysis and headless execution.
+   - **Hybrid Plugin:** Combines a full plugin GUI (DockWidget/Toolbar) with a custom `QgsProcessingProvider` containing geoprocessing algorithms.
+   - **Standalone Headless PyQGIS Script:** Executed outside QGIS GUI (OS terminal, scheduled cron job, Docker container, or via `qgis_process` CLI) initialized headlessly via `QgsApplication(GUI=False)` with zero Qt GUI dependencies.
+2. **QGIS Target Version:** QGIS 3.x LTR (PyQt5) vs. QGIS 3.40+/4.0 (PyQt6).
+3. **Menu & UI Placement (If Plugin / Hybrid / Console Action):**
+   - Main Top-Level Menu Bar item (e.g., dedicated menu next to `Processing`/`Help`)
+   - Standard `Plugins` menu drop-down (`iface.pluginMenu().addAction()`)
+   - Specific category sub-menu (`Vector`, `Raster`, `Database`)
+   - Main QGIS Toolbar icon (`iface.addToolBarIcon()`)
 
 ## 1. Processing Algorithm (`QgsProcessingAlgorithm`)
 
