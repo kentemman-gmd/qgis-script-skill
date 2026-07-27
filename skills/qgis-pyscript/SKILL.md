@@ -42,8 +42,8 @@ Always apply the **Documentation First Policy**:
     * Specific category sub-menu (`Vector`, `Raster`, `Database`)
     * Main QGIS Toolbar icon (`iface.addToolBarIcon()`)
 * **Automated Icon Generation Protocol (Plugins, Processing Tools, Hybrid & Console Actions):** When creating a QGIS Plugin, Processing Algorithm, Hybrid Plugin, or Console Script with custom toolbar buttons, **always generate a clean, flat 2D SVG vector icon (`icon.svg`)**:
-  1. **Flat SVG Vector Prompting & Generation:** Generate or craft a native scalable `icon.svg` vector file (the official QGIS standard for HiDPI/4K screens and light/dark theme adaptation) adhering strictly to flat 2D design principles:
-     > *"A modern, minimalist flat 2D vector GIS icon for a QGIS [Plugin/Processing Tool/Console Script] named [Name]. Features [key GIS symbol] in the center. Clean 2D flat vector geometry with crisp outlines, solid bold fill colors, and transparent background. Strictly NO 3D effects, NO drop shadows, NO volumetric shading, NO realistic textures, NO gradients."*
+  1. **Flat SVG Vector Prompting & Generation:** Generate or craft a native scalable `icon.svg` vector file (the official QGIS standard for HiDPI/4K screens and light/dark theme adaptation) adhering strictly to flat 2D design principles with the icon element perfectly centered on the SVG canvas viewport:
+     > *"A modern, minimalist flat 2D vector GIS icon for a QGIS [Plugin/Processing Tool/Console Script] named [Name]. Features [key GIS symbol] perfectly centered within the square SVG canvas viewport with balanced padding. Clean 2D flat vector geometry with crisp outlines, solid bold fill colors, and transparent background. Strictly NO 3D effects, NO drop shadows, NO volumetric shading, NO realistic textures, NO gradients."*
   2. **Manifest Integration (`metadata.txt`):** Always set `icon=icon.svg` in `metadata.txt`.
   3. **Dynamic Icon Loading in Python:** Always load icons using SVG path resolution with standard QGIS theme fallback:
      ```python
