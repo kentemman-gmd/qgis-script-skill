@@ -49,9 +49,12 @@ for action in existing_actions:
     iface.mainWindow().removeAction(action)
     action.deleteLater()
 
-# Load icon dynamically
-icon_path = os.path.join(os.path.dirname(__file__), "icon.png")
-icon = QIcon(icon_path) if os.path.exists(icon_path) else QIcon(":/images/themes/default/mActionBuffer.svg")
+# Load icon dynamically (SVG priority with QGIS theme fallback)
+icon_path_svg = os.path.join(os.path.dirname(__file__), "icon.svg")
+if os.path.exists(icon_path_svg):
+    icon = QIcon(icon_path_svg)
+else:
+    icon = QIcon(":/images/themes/default/mActionFilter.svg")
 
 new_action = QAction(icon, "Run Utility", iface.mainWindow())
 new_action.setObjectName(ACTION_NAME)
@@ -113,8 +116,11 @@ class MyQgisPlugin:
 
     def initGui(self):
         """Setup UI and menus on plugin load."""
-        icon_path = os.path.join(os.path.dirname(__file__), "icon.png")
-        icon = QIcon(icon_path) if os.path.exists(icon_path) else QIcon(":/images/themes/default/mActionBuffer.svg")
+        icon_path_svg = os.path.join(os.path.dirname(__file__), "icon.svg")
+        if os.path.exists(icon_path_svg):
+            icon = QIcon(icon_path_svg)
+        else:
+            icon = QIcon(":/images/themes/default/mActionFilter.svg")
 
         self.action = QAction(icon, "My Plugin Action", self.iface.mainWindow())
         self.action.triggered.connect(self.run)

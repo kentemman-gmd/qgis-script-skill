@@ -39,7 +39,7 @@ Use scalable plugin architecture:
 plugin_name/
 ├── __init__.py
 ├── metadata.txt
-├── icon.png                  # Mandatory plugin icon
+├── icon.svg                  # Mandatory scalable SVG vector icon
 ├── plugin.py
 ├── resources.qrc
 ├── resources.py
@@ -63,23 +63,24 @@ plugin_name/
 
 ## 4. Automated Icon Generation Protocol (Console, Plugin, Processing Tool & Hybrid)
 
-When creating a QGIS Plugin, Processing Algorithm, Hybrid Plugin, or Console Script with custom toolbar buttons, **always generate and configure a custom transparent PNG icon automatically**:
+When creating a QGIS Plugin, Processing Algorithm, Hybrid Plugin, or Console Script with custom toolbar buttons, **always generate a clean, flat 2D SVG vector icon (`icon.svg`)**:
 
-1. **Transparent Image Generation Prompting:**
-   Invoke `generate_image` tool with explicit transparent background requirements:
-   > *"A modern, minimalist GIS vector icon for a QGIS [Plugin/Processing Tool/Console Script] named [Name]. Features [key GIS symbol] on a **completely transparent background (PNG format)** with crisp outlines, high-contrast colors, and no solid background square/circle. Must render clearly on both light and dark QGIS toolbar themes."*
-2. **File Storage & Asset Management:**
-   Save/copy the generated transparent image to `icon.png` inside the root directory of the plugin (`plugin_folder/icon.png`) or script workspace directory.
-3. **Manifest Integration (`metadata.txt` for Plugins & Hybrid):**
-   Include `icon=icon.png` in the `[general]` section of `metadata.txt`.
-4. **Dynamic Icon Loading in Python:**
-   Always load `icon.png` using dynamic path resolution with fallback:
+1. **Flat SVG Vector Prompting & Generation:**
+   Generate or craft a native scalable `icon.svg` vector file (the official QGIS standard for HiDPI/4K screens and light/dark theme adaptation) adhering strictly to flat 2D design principles:
+   > *"A modern, minimalist flat 2D vector GIS icon for a QGIS [Plugin/Processing Tool/Console Script] named [Name]. Features [key GIS symbol] in the center. Clean 2D flat vector geometry with crisp outlines, solid bold fill colors, and transparent background. Strictly NO 3D effects, NO drop shadows, NO volumetric shading, NO realistic textures, NO gradients."*
+2. **Manifest Integration (`metadata.txt`):**
+   Always set `icon=icon.svg` in `metadata.txt`.
+3. **Dynamic Icon Loading in Python:**
+   Always load icons using SVG path resolution with standard QGIS theme fallback:
    ```python
    import os
    from qgis.PyQt.QtGui import QIcon
 
-   icon_path = os.path.join(os.path.dirname(__file__), "icon.png")
-   icon = QIcon(icon_path) if os.path.exists(icon_path) else QIcon(":/images/themes/default/mActionBuffer.svg")
+   icon_path_svg = os.path.join(self.plugin_dir, "icon.svg")
+   if os.path.exists(icon_path_svg):
+       icon = QIcon(icon_path_svg)
+   else:
+       icon = QIcon(":/images/themes/default/mActionFilter.svg")
    ```
 
 ## 5. Lifecycle & Deployment Guidelines by Deliverable Type
